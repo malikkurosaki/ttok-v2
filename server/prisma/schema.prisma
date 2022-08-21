@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(uuid())
+  name          String
+  email         String          @unique
+  password      String
+  MemberJoin    MemberJoin[]
+  Score         Score[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now())
+  MemberComment MemberComment[]
+  Member        Member[]
+}
+
+model Member {
+  id                String          @id @default(uuid())
+  comment           String?
+  uniqueId          String?
+  nickname          String?
+  profilePictureUrl String?
+  Score             Score?          @relation(fields: [scoreId], references: [id])
+  scoreId           String?
+  MemberJoin        MemberJoin[]
+  MemberComment     MemberComment[]
+  User              User?           @relation(fields: [userId], references: [id])
+  userId            String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now())
+}
+
+model MemberJoin {
+  id       String  @id @default(uuid())
+  Member   Member? @relation(fields: [memberId], references: [id])
+  User     User?   @relation(fields: [userId], references: [id])
+  userId   String?
+  memberId String?
+  roomId   String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now())
+}
+
+model MemberComment {
+  id        String   @id @default(uuid())
+  Member    Member?  @relation(fields: [memberId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  memberId  String?
+  roomId    String?
+}
+
+model Score {
+  id     String   @id @default(uuid())
+  score  Int
+  Member Member[]
+  User   User?    @relation(fields: [userId], references: [id])
+  userId String?
+  roomId String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now())
+}
